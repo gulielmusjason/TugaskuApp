@@ -80,7 +80,11 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
 
   void _handleMembersChanged(List<String> members) {
     setState(() {
-      _selectedMembers = members;
+      if (members.contains('Pilih Semua')) {
+        _selectedMembers = _getAvailableMembers();
+      } else {
+        _selectedMembers = members;
+      }
     });
   }
 

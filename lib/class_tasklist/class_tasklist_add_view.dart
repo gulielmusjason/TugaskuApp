@@ -121,7 +121,13 @@ class ClassTaskListAddView extends StatelessWidget {
             ),
           ),
           selectedItems: selectedMembers,
-          onChanged: onMembersChanged,
+          onChanged: (List<String> selectedItems) {
+            if (selectedItems.contains('Pilih Semua')) {
+              onMembersChanged(availableMembers);
+            } else {
+              onMembersChanged(selectedItems);
+            }
+          },
           dropdownBuilder: (context, selectedItems) {
             if (selectedItems.isEmpty) {
               return const Text("Pilih anggota");

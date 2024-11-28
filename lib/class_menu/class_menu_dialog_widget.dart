@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
-class AddClassPage extends StatelessWidget {
+class AddClassPage extends StatefulWidget {
   final TextEditingController addClassController;
   final List<String> classAvailableIcons;
   final ValueChanged<String?> addClassOnChanged;
   final String addClassSelectedIcon;
-  final bool addClassIsLoading;
-  final VoidCallback addClassOnAddPressed;
-  final VoidCallback addClassOnCancelPressed;
+  final Future<bool> Function() addClassOnAddPressed;
+
   final Function(String) validateClassName;
 
   const AddClassPage({
@@ -16,15 +15,19 @@ class AddClassPage extends StatelessWidget {
     required this.classAvailableIcons,
     required this.addClassOnChanged,
     required this.addClassSelectedIcon,
-    required this.addClassIsLoading,
     required this.addClassOnAddPressed,
-    required this.addClassOnCancelPressed,
     required this.validateClassName,
   });
 
   @override
+  State<AddClassPage> createState() => _AddClassPageState();
+}
+
+class _AddClassPageState extends State<AddClassPage> {
+  final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+  @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tambah Kelas'),
@@ -41,9 +44,9 @@ class AddClassPage extends StatelessWidget {
                   hintText: 'Nama Kelas',
                   errorStyle: TextStyle(color: Colors.red),
                 ),
-                controller: addClassController,
+                controller: widget.addClassController,
                 validator: (value) {
-                  return validateClassName(value ?? '');
+                  return widget.validateClassName(value ?? '');
                 },
               ),
               const SizedBox(height: 20),
@@ -51,8 +54,8 @@ class AddClassPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: DropdownButtonFormField<String>(
-                  value: addClassSelectedIcon,
-                  items: classAvailableIcons
+                  value: widget.addClassSelectedIcon,
+                  items: widget.classAvailableIcons
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -66,7 +69,7 @@ class AddClassPage extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                  onChanged: addClassOnChanged,
+                  onChanged: widget.addClassOnChanged,
                 ),
               ),
               const SizedBox(height: 40),
@@ -77,19 +80,37 @@ class AddClassPage extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
-                    onPressed: addClassOnCancelPressed,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: const Text('Batal'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: addClassIsLoading
+                    onPressed: isLoading
                         ? null
-                        : () {
+                        : () async {
+                            setState(() {
+                              isLoading = true;
+                            });
                             if (formKey.currentState?.validate() ?? false) {
-                              addClassOnAddPressed();
+                              final success =
+                                  await widget.addClassOnAddPressed();
+                              if (success) {
+                                Navigator.pop(context);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Kelas berhasil dibuat'),
+                                  ),
+                                );
+                              }
                             }
+
+                            setState(() {
+                              isLoading = false;
+                            });
                           },
-                    child: addClassIsLoading
+                    child: isLoading
                         ? const SizedBox(
                             width: 20,
                             height: 20,
@@ -125,23 +146,27 @@ IconData _getIcon(String iconName) {
   return iconData;
 }
 
-class JoinClassDialog extends StatelessWidget {
-  final Function(String) onJoin;
+class JoinClassDialog extends StatefulWidget {
+  final Future<bool> Function(String) onJoin;
   final Function(String) validateClasscode;
-  final VoidCallback onJoinCancelPressed;
 
   const JoinClassDialog({
     super.key,
     required this.onJoin,
     required this.validateClasscode,
-    required this.onJoinCancelPressed,
   });
 
   @override
-  Widget build(BuildContext context) {
-    String kodeKelas = '';
-    final formKey = GlobalKey<FormState>();
+  State<JoinClassDialog> createState() => _JoinClassDialogState();
+}
 
+class _JoinClassDialogState extends State<JoinClassDialog> {
+  String kodeKelas = '';
+  final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
     return Dialog(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -161,10 +186,12 @@ class JoinClassDialog extends StatelessWidget {
                   errorStyle: TextStyle(color: Colors.red),
                 ),
                 onChanged: (value) {
-                  kodeKelas = value;
+                  setState(() {
+                    kodeKelas = value;
+                  });
                 },
                 validator: (value) {
-                  return validateClasscode(value ?? '');
+                  return widget.validateClasscode(value ?? '');
                 },
               ),
               const SizedBox(height: 16),
@@ -175,17 +202,50 @@ class JoinClassDialog extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
-                    onPressed: onJoinCancelPressed,
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: const Text('Batal'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: () async {
-                      if (formKey.currentState?.validate() ?? false) {
-                        await onJoin(kodeKelas);
-                      }
-                    },
-                    child: const Text('Gabung'),
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            if (formKey.currentState?.validate() ?? false) {
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              final navigator = Navigator.of(context);
+                              final success = await widget.onJoin(kodeKelas);
+                              if (success) {
+                                navigator.pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Berhasil bergabung ke kelas'),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Kode kelas tidak ditemukan'),
+                                  ),
+                                );
+                              }
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
+                          },
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Gabung'),
                   ),
                 ],
               ),

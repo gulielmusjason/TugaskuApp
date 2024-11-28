@@ -6,14 +6,13 @@ class ClassMenuDialogView extends StatelessWidget {
   final TextEditingController addClassController;
   final List<String> classAvailableIcons;
   final String addClassSelectedIcon;
-  final bool addClassIsLoading;
+
   final ValueChanged<String?> addClassOnChanged;
-  final VoidCallback addClassOnAddPressed;
-  final VoidCallback addClassOnCancelPressed;
+  final Future<bool> Function() addClassOnAddPressed;
+
   final Function(String) validateClassName;
-  final Function(String) onJoinClass;
+  final Future<bool> Function(String) onJoinClass;
   final Function(String) validateClasscode;
-  final VoidCallback onJoinCancelPressed;
 
   const ClassMenuDialogView({
     super.key,
@@ -21,14 +20,11 @@ class ClassMenuDialogView extends StatelessWidget {
     required this.addClassController,
     required this.classAvailableIcons,
     required this.addClassSelectedIcon,
-    required this.addClassIsLoading,
     required this.addClassOnChanged,
     required this.addClassOnAddPressed,
-    required this.addClassOnCancelPressed,
     required this.onJoinClass,
     required this.validateClassName,
     required this.validateClasscode,
-    required this.onJoinCancelPressed,
   });
 
   @override
@@ -72,16 +68,15 @@ class ClassMenuDialogView extends StatelessWidget {
   }
 
   void _showAddClassDialog(BuildContext context) {
+    Navigator.pop(context);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => AddClassPage(
           addClassController: addClassController,
           classAvailableIcons: classAvailableIcons,
           addClassSelectedIcon: addClassSelectedIcon,
-          addClassIsLoading: addClassIsLoading,
           addClassOnChanged: addClassOnChanged,
           addClassOnAddPressed: addClassOnAddPressed,
-          addClassOnCancelPressed: addClassOnCancelPressed,
           validateClassName: validateClassName,
         ),
       ),
@@ -89,12 +84,12 @@ class ClassMenuDialogView extends StatelessWidget {
   }
 
   void _showJoinClassDialog(BuildContext context) {
+    Navigator.pop(context);
     showDialog(
       context: context,
       builder: (context) => JoinClassDialog(
         onJoin: onJoinClass,
         validateClasscode: validateClasscode,
-        onJoinCancelPressed: onJoinCancelPressed,
       ),
     );
   }

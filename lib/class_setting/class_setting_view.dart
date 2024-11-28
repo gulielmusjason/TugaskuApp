@@ -27,51 +27,60 @@ class ClassSettingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: onBack,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) {
+          return;
+        }
+        onBack();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: onBack,
+          ),
+          title: const Text('Pengaturan'),
+          elevation: 0,
         ),
-        title: const Text('Pengaturan'),
-        elevation: 0,
-      ),
-      body: ListView(
-        children: [
-          const SizedBox(height: 16),
+        body: ListView(
+          children: [
+            const SizedBox(height: 16),
 
-          // Bagian Informasi Kelas
-          _buildSectionHeader(context, 'Informasi Kelas'),
-          _buildListTile(
-            context,
-            icon: Icons.edit,
-            title: 'Nama Kelas',
-            subtitle: className,
-            onTap: () => _showEditClassNameDialog(context),
-          ),
-          _buildListTile(
-            context,
-            icon: Icons.key,
-            title: 'Kode Kelas',
-            subtitle: classCode,
-            onTap: onCopyClassCode,
-            trailing: Icon(Icons.copy, size: 20, color: theme.iconTheme.color),
-          ),
-          const Divider(height: 32),
+            // Bagian Informasi Kelas
+            _buildSectionHeader(context, 'Informasi Kelas'),
+            _buildListTile(
+              context,
+              icon: Icons.edit,
+              title: 'Nama Kelas',
+              subtitle: className,
+              onTap: () => _showEditClassNameDialog(context),
+            ),
+            _buildListTile(
+              context,
+              icon: Icons.key,
+              title: 'Kode Kelas',
+              subtitle: classCode,
+              onTap: onCopyClassCode,
+              trailing:
+                  Icon(Icons.copy, size: 20, color: theme.iconTheme.color),
+            ),
+            const Divider(height: 32),
 
-          // Bagian Tindakan
-          _buildSectionHeader(context, 'Tindakan'),
-          _buildListTile(
-            context,
-            icon: Icons.delete_outline,
-            title: 'Hapus Kelas',
-            subtitle: 'Tindakan ini tidak dapat dibatalkan',
-            onTap: () => _showDeleteConfirmation(context),
-            iconColor: theme.colorScheme.error,
-            textColor: theme.colorScheme.error,
-          ),
-        ],
+            // Bagian Tindakan
+            _buildSectionHeader(context, 'Tindakan'),
+            _buildListTile(
+              context,
+              icon: Icons.delete_outline,
+              title: 'Hapus Kelas',
+              subtitle: 'Tindakan ini tidak dapat dibatalkan',
+              onTap: () => _showDeleteConfirmation(context),
+              iconColor: theme.colorScheme.error,
+              textColor: theme.colorScheme.error,
+            ),
+          ],
+        ),
       ),
     );
   }

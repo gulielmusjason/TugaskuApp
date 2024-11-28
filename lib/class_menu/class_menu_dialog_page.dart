@@ -42,25 +42,6 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
 
   // State variables
   String _selectedIcon = 'class_';
-  bool _isLoading = false;
-  bool _isAddingClass = false;
-
-  // UI State Management
-  void _setLoading(bool value) {
-    if (mounted) {
-      setState(() {
-        _isLoading = value;
-      });
-    }
-  }
-
-  void _setAddingClass(bool value) {
-    if (mounted) {
-      setState(() {
-        _isAddingClass = value;
-      });
-    }
-  }
 
   void _updateSelectedIcon(String? icon) {
     _selectedIcon = icon ?? 'class_';
@@ -72,22 +53,12 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
   }
 
   // Class Operations
-  Future<bool> handleAddClass({
-    required String className,
-    required String? classIconName,
-  }) async {
-    if (className.isEmpty) {
-      _showMessage.showMessage(context, 'Mohon isi nama kelas');
-      return false;
-    }
-
+  Future<bool> _handleAddClassOnPressed() async {
     try {
-      _setLoading(true);
-
       await _firebaseService.addClass(
         classCode: classCode,
-        className: className,
-        classIconName: classIconName,
+        className: _fieldTambahKelas.text,
+        classIconName: _selectedIcon,
         email: widget.email,
         role: widget.role,
       );
@@ -95,45 +66,17 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
         _showMessage.showMessage(context, 'Kelas berhasil dibuat');
         _fieldTambahKelas.clear();
       }
+      return true;
     } catch (e) {
       if (mounted) {
         _showMessage.showMessage(
             context, 'Gagal membuat kelas: ${e.toString()}');
       }
-    } finally {
-      if (mounted) {
-        _setLoading(false);
-      }
-    }
-    return true;
-  }
-
-  Future<void> _handleAddClassOnPressed() async {
-    print('handleAddClassOnPressed');
-
-    _setAddingClass(true);
-
-    final isSuccess = await handleAddClass(
-      className: _fieldTambahKelas.text,
-      classIconName: _selectedIcon,
-    );
-
-    if (mounted && isSuccess) {
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
-    }
-
-    _setAddingClass(false);
-  }
-
-  Future<bool> _handleJoinClass({required String classCode}) async {
-    if (classCode.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Mohon masukkan kode kelas')),
-      );
       return false;
     }
+  }
 
+  Future<bool> _handleJoinClassOnPressed(String classCode) async {
     try {
       await _firebaseService.joinClass(
         kodeKelas: classCode,
@@ -141,30 +84,16 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
         role: widget.role,
       );
 
-      if (mounted) {
-        _showMessage.showMessage(context, 'Berhasil bergabung ke kelas');
-        return true;
-      }
+      if (!mounted) return false;
+
+      _showMessage.showMessage(context, 'Berhasil bergabung ke kelas');
+      return true;
     } catch (e) {
-      if (mounted) {
-        _showMessage.showMessage(context, 'Kode kelas tidak ditemukan');
-      }
+      if (!mounted) return false;
+
+      _showMessage.showMessage(context, 'Kode kelas tidak ditemukan');
       return false;
     }
-    return false;
-  }
-
-  Future<void> _handleJoinClassOnPressed(String classCode) async {
-    final isSuccess = await _handleJoinClass(classCode: classCode);
-
-    if (mounted && isSuccess) {
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
-    }
-  }
-
-  void _handleAddClassOnCancelPressed() {
-    Navigator.of(context).pop();
   }
 
   String? _validateClassName(String value) {
@@ -181,12 +110,6 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
     return null;
   }
 
-  void _handleJoinClassOnCancelPressed() {
-    Navigator.of(context).pop();
-  }
-
-  bool get isLoading => _isLoading || _isAddingClass;
-
   @override
   Widget build(BuildContext context) {
     return ClassMenuDialogView(
@@ -194,14 +117,11 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
       addClassController: _fieldTambahKelas,
       classAvailableIcons: _availableIcons,
       addClassSelectedIcon: _selectedIcon,
-      addClassIsLoading: isLoading,
       addClassOnChanged: _updateSelectedIcon,
       addClassOnAddPressed: _handleAddClassOnPressed,
-      addClassOnCancelPressed: _handleAddClassOnCancelPressed,
       onJoinClass: _handleJoinClassOnPressed,
       validateClassName: _validateClassName,
       validateClasscode: _validateClasscode,
-      onJoinCancelPressed: _handleJoinClassOnCancelPressed,
     );
   }
 }

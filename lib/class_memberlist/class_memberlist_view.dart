@@ -98,11 +98,13 @@ class MemberListView extends StatelessWidget {
                         color: Colors.grey[600],
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        member['email'],
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                          letterSpacing: 0.2,
+                      Expanded(
+                        child: Text(
+                          member['email'],
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                            letterSpacing: 0.2,
+                          ),
                         ),
                       ),
                     ],
