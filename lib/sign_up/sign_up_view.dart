@@ -15,6 +15,7 @@ class SignUpView extends StatelessWidget {
   final GlobalKey<FormState> formKey;
 
   final ValueChanged<String?> onRoleChanged;
+  final bool isLoading;
 
   const SignUpView({
     super.key,
@@ -30,6 +31,7 @@ class SignUpView extends StatelessWidget {
     required this.validator,
     required this.onSignUpPressed,
     required this.onRoleChanged,
+    required this.isLoading,
   });
 
   @override
@@ -133,7 +135,10 @@ class SignUpView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        SignUpButton(onPressed: onSignUpPressed),
+        SignUpButton(
+          onPressed: onSignUpPressed,
+          isLoading: isLoading,
+        ),
       ],
     );
   }

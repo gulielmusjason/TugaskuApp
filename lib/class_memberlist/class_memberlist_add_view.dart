@@ -40,25 +40,34 @@ class MemberListAddView extends StatelessWidget {
                 showSearchBox: true,
                 searchFieldProps: TextFieldProps(
                   decoration: InputDecoration(
-                    hintText: "Cari berdasarkan email",
+                    hintText: "Cari berdasarkan username atau email",
                   ),
                 ),
               ),
               selectedItems: selectedMembers,
               onChanged: onMembersChanged,
               dropdownBuilder: (context, selectedItems) {
-                return Text(selectedItems.join(', '));
+                if (selectedItems.isEmpty) {
+                  return const Text("Pilih anggota");
+                }
+                return Text(selectedItems
+                    .map((item) => item.split('\n')[0])
+                    .join(', '));
               },
             ),
             const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
                   onPressed: onCancel,
                   child: const Text('Batal'),
                 ),
-                TextButton(
+                const SizedBox(width: 8),
+                ElevatedButton(
                   onPressed: onAdd,
                   child: const Text('Tambah'),
                 ),

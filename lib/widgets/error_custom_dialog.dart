@@ -9,7 +9,7 @@ class ErrorCustomDialog {
           title: const Text('Error'),
           content: Text(message),
           actions: <Widget>[
-            TextButton(
+            ElevatedButton(
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();

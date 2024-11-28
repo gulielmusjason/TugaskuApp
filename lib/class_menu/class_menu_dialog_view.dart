@@ -8,8 +8,12 @@ class ClassMenuDialogView extends StatelessWidget {
   final String addClassSelectedIcon;
   final bool addClassIsLoading;
   final ValueChanged<String?> addClassOnChanged;
-  final Future<void> Function() addClassOnAddPressed;
+  final VoidCallback addClassOnAddPressed;
+  final VoidCallback addClassOnCancelPressed;
+  final Function(String) validateClassName;
   final Function(String) onJoinClass;
+  final Function(String) validateClasscode;
+  final VoidCallback onJoinCancelPressed;
 
   const ClassMenuDialogView({
     super.key,
@@ -20,7 +24,11 @@ class ClassMenuDialogView extends StatelessWidget {
     required this.addClassIsLoading,
     required this.addClassOnChanged,
     required this.addClassOnAddPressed,
+    required this.addClassOnCancelPressed,
     required this.onJoinClass,
+    required this.validateClassName,
+    required this.validateClasscode,
+    required this.onJoinCancelPressed,
   });
 
   @override
@@ -73,15 +81,21 @@ class ClassMenuDialogView extends StatelessWidget {
           addClassIsLoading: addClassIsLoading,
           addClassOnChanged: addClassOnChanged,
           addClassOnAddPressed: addClassOnAddPressed,
+          addClassOnCancelPressed: addClassOnCancelPressed,
+          validateClassName: validateClassName,
         ),
       ),
     );
   }
 
   void _showJoinClassDialog(BuildContext context) {
-    Navigator.of(context).pop();
-    JoinClassDialog(
-      onJoin: onJoinClass,
-    ).show(context);
+    showDialog(
+      context: context,
+      builder: (context) => JoinClassDialog(
+        onJoin: onJoinClass,
+        validateClasscode: validateClasscode,
+        onJoinCancelPressed: onJoinCancelPressed,
+      ),
+    );
   }
 }

@@ -7,6 +7,8 @@ class AddClassPage extends StatelessWidget {
   final String addClassSelectedIcon;
   final bool addClassIsLoading;
   final VoidCallback addClassOnAddPressed;
+  final VoidCallback addClassOnCancelPressed;
+  final Function(String) validateClassName;
 
   const AddClassPage({
     super.key,
@@ -16,68 +18,88 @@ class AddClassPage extends StatelessWidget {
     required this.addClassSelectedIcon,
     required this.addClassIsLoading,
     required this.addClassOnAddPressed,
+    required this.addClassOnCancelPressed,
+    required this.validateClassName,
   });
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tambah Kelas'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              decoration: const InputDecoration(hintText: 'Nama Kelas'),
-              controller: addClassController,
-            ),
-            const SizedBox(height: 20),
-            const Text('Pilih Ikon:'),
-            SizedBox(
-              width: double.infinity,
-              child: DropdownButtonFormField<String>(
-                value: addClassSelectedIcon,
-                items: classAvailableIcons
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Row(
-                      children: [
-                        Icon(_getIcon(value),
-                            color: Theme.of(context).primaryColor, size: 30),
-                        const SizedBox(width: 10),
-                        Text(value),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: addClassOnChanged,
+        child: Form(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Nama Kelas',
+                  errorStyle: TextStyle(color: Colors.red),
+                ),
+                controller: addClassController,
+                validator: (value) {
+                  return validateClassName(value ?? '');
+                },
               ),
-            ),
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Batal'),
+              const SizedBox(height: 20),
+              const Text('Pilih Ikon:'),
+              SizedBox(
+                width: double.infinity,
+                child: DropdownButtonFormField<String>(
+                  value: addClassSelectedIcon,
+                  items: classAvailableIcons
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Row(
+                        children: [
+                          Icon(_getIcon(value),
+                              color: Theme.of(context).primaryColor, size: 30),
+                          const SizedBox(width: 10),
+                          Text(value),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: addClassOnChanged,
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: addClassIsLoading ? null : addClassOnAddPressed,
-                  child: addClassIsLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Simpan'),
-                ),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: addClassOnCancelPressed,
+                    child: const Text('Batal'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: addClassIsLoading
+                        ? null
+                        : () {
+                            if (formKey.currentState?.validate() ?? false) {
+                              addClassOnAddPressed();
+                            }
+                          },
+                    child: addClassIsLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Simpan'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -102,78 +124,74 @@ IconData _getIcon(String iconName) {
   return iconData;
 }
 
-class JoinClassDialog {
+class JoinClassDialog extends StatelessWidget {
   final Function(String) onJoin;
+  final Function(String) validateClasscode;
+  final VoidCallback onJoinCancelPressed;
 
-  JoinClassDialog({required this.onJoin});
+  const JoinClassDialog({
+    super.key,
+    required this.onJoin,
+    required this.validateClasscode,
+    required this.onJoinCancelPressed,
+  });
 
-  void show(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     String kodeKelas = '';
-    bool isLoading = false;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Dialog(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+    final formKey = GlobalKey<FormState>();
+
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Gabung Kelas',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Masukkan Kode Kelas',
+                  errorStyle: TextStyle(color: Colors.red),
+                ),
+                onChanged: (value) {
+                  kodeKelas = value;
+                },
+                validator: (value) {
+                  return validateClasscode(value ?? '');
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Text(
-                    'Gabung Kelas',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: onJoinCancelPressed,
+                    child: const Text('Batal'),
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    decoration:
-                        const InputDecoration(hintText: 'Masukkan Kode Kelas'),
-                    onChanged: (value) {
-                      kodeKelas = value;
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (formKey.currentState?.validate() ?? false) {
+                        await onJoin(kodeKelas);
+                      }
                     },
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                Navigator.of(context).pop();
-                              },
-                        child: const Text('Batal'),
-                      ),
-                      TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                setState(() {
-                                  isLoading = true;
-                                });
-                                await onJoin(kodeKelas);
-                                kodeKelas = '';
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Text('Gabung'),
-                      ),
-                    ],
+                    child: const Text('Gabung'),
                   ),
                 ],
               ),
-            ),
-          );
-        });
-      },
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

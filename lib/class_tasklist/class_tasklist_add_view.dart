@@ -23,7 +23,7 @@ class ClassTaskListAddView extends StatelessWidget {
   final bool isLoading;
   final List<String> selectedMembers;
   final Function(List<String>) onMembersChanged;
-  final List<Map<String, dynamic>> availableMembers;
+  final List<String> availableMembers;
   final Map<String, dynamic>? existingTask;
 
   const ClassTaskListAddView({
@@ -110,47 +110,24 @@ class ClassTaskListAddView extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         DropdownSearch<String>.multiSelection(
-          items: (filter, infiniteScrollProps) => Future.value([
-            'Pilih Semua',
-            ...availableMembers
-                .map((member) => '${member['username']} (${member['email']})')
-          ]),
+          items: (filter, infiniteScrollProps) =>
+              Future.value(['Pilih Semua', ...availableMembers]),
           popupProps: PopupPropsMultiSelection.menu(
             showSearchBox: true,
             searchFieldProps: const TextFieldProps(
               decoration: InputDecoration(
-                hintText: "Cari anggota",
+                hintText: "Cari berdasarkan username atau email",
               ),
             ),
           ),
-          selectedItems: selectedMembers.map((email) {
-            final username = _getUsernameFromEmail(email);
-            return username != null ? '$username ($email)' : email;
-          }).toList(),
-          onChanged: (selectedUsernames) {
-            if (selectedUsernames.contains('Pilih Semua')) {
-              final allEmails = availableMembers
-                  .where((member) => member['username'] != 'Pilih Semua')
-                  .map((member) => member['email'])
-                  .whereType<String>()
-                  .toList();
-              onMembersChanged(allEmails);
-            } else {
-              final selectedEmails = selectedUsernames
-                  .map((usernameWithEmail) {
-                    final username = usernameWithEmail.split(' (')[0];
-                    return _getEmailFromUsername(username);
-                  })
-                  .whereType<String>()
-                  .toList();
-              onMembersChanged(selectedEmails);
-            }
-          },
+          selectedItems: selectedMembers,
+          onChanged: onMembersChanged,
           dropdownBuilder: (context, selectedItems) {
             if (selectedItems.isEmpty) {
               return const Text("Pilih anggota");
             }
-            return Text(selectedItems.join(', '));
+            return Text(
+                selectedItems.map((item) => item.split('\n')[0]).join(', '));
           },
         ),
       ],
@@ -303,21 +280,5 @@ class ClassTaskListAddView extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String? _getEmailFromUsername(String username) {
-    final member = availableMembers.firstWhere(
-      (member) => member['username'] == username,
-      orElse: () => <String, dynamic>{},
-    );
-    return member['email'] as String?;
-  }
-
-  String? _getUsernameFromEmail(String email) {
-    final member = availableMembers.firstWhere(
-      (member) => member['email'] == email,
-      orElse: () => <String, dynamic>{},
-    );
-    return member['username'] as String?;
   }
 }

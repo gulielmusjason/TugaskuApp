@@ -10,6 +10,7 @@ class SignInView extends StatelessWidget {
   final VoidCallback onSignInPressed;
   final VoidCallback onSignUpPressed;
   final GlobalKey<FormState> formKey;
+  final bool isLoading;
 
   const SignInView({
     super.key,
@@ -21,6 +22,7 @@ class SignInView extends StatelessWidget {
     required this.onSignInPressed,
     required this.onSignUpPressed,
     required this.formKey,
+    required this.isLoading,
   });
 
   @override
@@ -83,7 +85,10 @@ class SignInView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        LoginButton(onPressed: onSignInPressed),
+        LoginButton(
+          onPressed: onSignInPressed,
+          isLoading: isLoading,
+        ),
       ],
     );
   }

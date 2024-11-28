@@ -62,7 +62,7 @@ class MainAppView extends StatelessWidget {
 
   Widget _buildDrawer(BuildContext context) {
     return SizedBox(
-      width: 250,
+      width: 280,
       child: Drawer(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(0)),
@@ -75,7 +75,7 @@ class MainAppView extends StatelessWidget {
               accountEmail: Text(email),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
-               child: Text(
+                child: Text(
                   username.substring(0, 2).toUpperCase(),
                   style: const TextStyle(fontSize: 40.0),
                 ),

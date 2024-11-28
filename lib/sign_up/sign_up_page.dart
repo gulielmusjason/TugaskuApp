@@ -3,6 +3,7 @@ import '../services/firebase_service.dart';
 import '../sign_in/sign_in_page.dart';
 import '../widgets/error_custom_dialog.dart';
 import 'sign_up_view.dart';
+import '../widgets/show_message.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -23,11 +24,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ErrorCustomDialog _errorCustomDialog = ErrorCustomDialog();
   final FirebaseService _firebaseService = FirebaseService();
-
+  final ShowMessage _showMessage = ShowMessage();
   // State
   String _selectedRole = '';
   bool _passwordVisible = true;
   bool _confirmPasswordVisible = true;
+  bool _isLoading = false;
 
   // UI Event Handlers
   void _onRoleChanged({String? role}) {
@@ -93,6 +95,10 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 
+    setState(() {
+      _isLoading = true;
+    });
+
     String result = await _firebaseService.signUp(
       email: _emailController.text,
       password: _passwordController.text,
@@ -100,11 +106,16 @@ class _SignUpPageState extends State<SignUpPage> {
       role: _selectedRole,
     );
 
+    setState(() {
+      _isLoading = false;
+    });
+
     _handleSignUpResult(result: result);
   }
 
   void _handleSignUpResult({required String result}) {
     if (result == 'success') {
+      _showMessage.showMessage(context, 'Pendaftaran berhasil');
       _navigateToSignIn();
     } else {
       _showErrorDialog(message: result);
@@ -140,6 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
       onSignUpPressed: _onSignUpPressed,
       formKey: _formKey,
       onRoleChanged: (role) => _onRoleChanged(role: role),
+      isLoading: _isLoading,
     );
   }
 

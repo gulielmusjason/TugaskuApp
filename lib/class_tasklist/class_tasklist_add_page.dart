@@ -90,6 +90,13 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
     });
   }
 
+  List<String> _getAvailableMembers() {
+    return _availableMembers
+        .map((member) =>
+            '${member['username']}\n${member['role']}\n${member['email']}')
+        .toList();
+  }
+
   Future<void> _showDatePicker() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -278,6 +285,13 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
         }
       }
 
+      List<String> memberEmails = [];
+      for (String member in _selectedMembers) {
+        String email = member.split('\n')[2];
+        memberEmails.add(email);
+      }
+      _selectedMembers = memberEmails;
+
       if (widget.existingTask != null) {
         await _firebaseService.updateTask(
           taskId: widget.existingTask!['id'],
@@ -375,7 +389,7 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
       isLoading: _isLoading,
       selectedMembers: _selectedMembers,
       onMembersChanged: _handleMembersChanged,
-      availableMembers: _availableMembers,
+      availableMembers: _getAvailableMembers(),
       existingTask: widget.existingTask,
     );
   }

@@ -52,8 +52,13 @@ class CustomTextField extends StatelessWidget {
 
 class LoginButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final bool isLoading;
 
-  const LoginButton({super.key, required this.onPressed});
+  const LoginButton({
+    super.key,
+    required this.onPressed,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +68,17 @@ class LoginButton extends StatelessWidget {
         width: double.infinity,
         height: 40,
         child: ElevatedButton(
-          onPressed: onPressed,
-          child: const Text('LOGIN'),
+          onPressed: isLoading ? null : onPressed,
+          child: isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Text('LOGIN'),
         ),
       ),
     );

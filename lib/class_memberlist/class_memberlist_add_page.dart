@@ -44,12 +44,14 @@ class _MemberListAddPageState extends State<MemberListAddPage> {
   }
 
   void _onAdd() {
+    List<String> usernames = [];
     for (var member in _selectedMembers) {
       var memberData = _members.firstWhere(
-        (m) => '${m['email']} (${m['role']})' == member,
+        (m) => '${m['username']}\n${m['role']}\n${m['email']}' == member,
         orElse: () => <String, dynamic>{},
       );
       if (memberData.isNotEmpty) {
+        usernames.add(memberData['username']);
         _addMembers(members: [
           {'email': memberData['email'], 'role': memberData['role']}
         ]);
@@ -57,7 +59,7 @@ class _MemberListAddPageState extends State<MemberListAddPage> {
     }
 
     _showMessage.showMessage(
-        context, '$_selectedMembers telah ditambahkan ke kelas');
+        context, '${usernames.join(", ")} telah ditambahkan ke kelas');
     _selectedMembers.clear();
     Navigator.of(context).pop();
   }
@@ -69,7 +71,8 @@ class _MemberListAddPageState extends State<MemberListAddPage> {
 
   List<String> _getItems() {
     return _members
-        .map((member) => '${member['email']} (${member['role']})')
+        .map((member) =>
+            '${member['username']}\n${member['role']}\n${member['email']}')
         .toList();
   }
 

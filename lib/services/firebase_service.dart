@@ -286,7 +286,11 @@ class FirebaseService {
 
     final snapshot = await _firestore.collection('users').get();
     final nonMembers = snapshot.docs
-        .map((doc) => {'email': doc['email'], 'role': doc['role']})
+        .map((doc) => {
+              'email': doc['email'],
+              'role': doc['role'],
+              'username': doc['username']
+            })
         .where((member) => !classMembers
             .any((classMember) => classMember['email'] == member['email']))
         .toList();

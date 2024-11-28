@@ -19,6 +19,7 @@ class _SignInPageState extends State<SignInPage> {
 
   // State
   bool _passwordVisible = true;
+  bool _isLoading = false;
 
   // Keys & Services
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -64,15 +65,27 @@ class _SignInPageState extends State<SignInPage> {
   // Authentication
   Future<void> _signIn() async {
     if (formKey.currentState!.validate()) {
-      final result = await _firebaseService.signIn(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
-      if (result['success']) {
-        _handleSuccessfulSignIn(result: result);
-      } else {
-        _showErrorDialog(message: result['message']);
+      try {
+        final result = await _firebaseService.signIn(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+
+        if (result['success']) {
+          _handleSuccessfulSignIn(result: result);
+        } else {
+          _showErrorDialog(message: result['message']);
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -118,6 +131,7 @@ class _SignInPageState extends State<SignInPage> {
       onSignInPressed: _onSignInPressed,
       onSignUpPressed: _onSignUpPressed,
       formKey: formKey,
+      isLoading: _isLoading,
     );
   }
 

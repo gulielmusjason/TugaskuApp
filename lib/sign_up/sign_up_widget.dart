@@ -96,19 +96,33 @@ class CustomDropdown extends StatelessWidget {
 
 class SignUpButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final bool isLoading;
 
-  const SignUpButton({super.key, required this.onPressed});
+  const SignUpButton({
+    super.key,
+    required this.onPressed,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 50, bottom: 20, left: 20, right: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       child: SizedBox(
         width: double.infinity,
         height: 40,
         child: ElevatedButton(
-          onPressed: onPressed,
-          child: const Text('DAFTAR'),
+          onPressed: isLoading ? null : onPressed,
+          child: isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Text('DAFTAR'),
         ),
       ),
     );

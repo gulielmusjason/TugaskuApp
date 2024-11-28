@@ -109,9 +109,8 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
   }
 
   Future<void> _handleAddClassOnPressed() async {
-    if (_isAddingClass) return;
-
     _setAddingClass(true);
+
     final isSuccess = await handleAddClass(
       className: _fieldTambahKelas.text,
       classIconName: _selectedIcon,
@@ -121,12 +120,15 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
       Navigator.of(context).pop();
       Navigator.of(context).pop();
     }
+
     _setAddingClass(false);
   }
 
   Future<bool> _handleJoinClass({required String classCode}) async {
     if (classCode.isEmpty) {
-      _showMessage.showMessage(context, 'Mohon masukkan kode kelas');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon masukkan kode kelas')),
+      );
       return false;
     }
 
@@ -139,13 +141,15 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
 
       if (mounted) {
         _showMessage.showMessage(context, 'Berhasil bergabung ke kelas');
+        return true;
       }
     } catch (e) {
       if (mounted) {
         _showMessage.showMessage(context, 'Kode kelas tidak ditemukan');
       }
+      return false;
     }
-    return true;
+    return false;
   }
 
   Future<void> _handleJoinClassOnPressed(String classCode) async {
@@ -153,8 +157,33 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
 
     if (mounted && isSuccess) {
       Navigator.of(context).pop();
+      Navigator.of(context).pop();
     }
   }
+
+  void _handleAddClassOnCancelPressed() {
+    Navigator.of(context).pop();
+  }
+
+  String? _validateClassName(String value) {
+    if (value.isEmpty) {
+      return 'Nama kelas tidak boleh kosong';
+    }
+    return null;
+  }
+
+  String? _validateClasscode(String value) {
+    if (value.isEmpty) {
+      return 'Kode kelas tidak boleh kosong';
+    }
+    return null;
+  }
+
+  void _handleJoinClassOnCancelPressed() {
+    Navigator.of(context).pop();
+  }
+
+  bool get isLoading => _isLoading || _isAddingClass;
 
   @override
   Widget build(BuildContext context) {
@@ -163,10 +192,14 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
       addClassController: _fieldTambahKelas,
       classAvailableIcons: _availableIcons,
       addClassSelectedIcon: _selectedIcon,
-      addClassIsLoading: _isLoading || _isAddingClass,
+      addClassIsLoading: isLoading,
       addClassOnChanged: _updateSelectedIcon,
       addClassOnAddPressed: _handleAddClassOnPressed,
+      addClassOnCancelPressed: _handleAddClassOnCancelPressed,
       onJoinClass: _handleJoinClassOnPressed,
+      validateClassName: _validateClassName,
+      validateClasscode: _validateClasscode,
+      onJoinCancelPressed: _handleJoinClassOnCancelPressed,
     );
   }
 }
