@@ -9,27 +9,27 @@ import 'package:workmanager/workmanager.dart';
 import 'services/firebase_service.dart';
 
 // Background task handler untuk pengecekan deadline tugas
-// @pragma('vm:entry-point')
-// void callbackDispatcher() {
-//   Workmanager().executeTask((task, inputData) async {
-//     try {
-//       await Firebase.initializeApp(
-//         options: DefaultFirebaseOptions.currentPlatform,
-//       );
-//       final firebaseService = FirebaseService();
-//       await firebaseService.checkAndSendTaskReminders();
-//       return true;
-//     } catch (e) {
-//       return false;
-//     }
-//   });
-// }
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      final firebaseService = FirebaseService();
+      await firebaseService.checkAndSendTaskReminders();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  });
+}
 
 // Kelas untuk menginisialisasi komponen aplikasi
 class AppInitializer {
   static Future<void> initialize() async {
     await _initializeCore();
-    // await _initializeWorkManager();
+    await _initializeWorkManager();
     await _initializePushNotifications();
   }
 
@@ -40,17 +40,17 @@ class AppInitializer {
     );
   }
 
-  // static Future<void> _initializeWorkManager() async {
-  //   await Workmanager().initialize(callbackDispatcher);
-  //   await Workmanager().registerPeriodicTask(
-  //     'taskReminderChecker',
-  //     'checkDeadlines',
-  //     frequency: Duration(hours: 6),
-  //     constraints: Constraints(
-  //       networkType: NetworkType.connected,
-  //     ),
-  //   );
-  // }
+  static Future<void> _initializeWorkManager() async {
+    await Workmanager().initialize(callbackDispatcher);
+    await Workmanager().registerPeriodicTask(
+      'taskReminderChecker',
+      'checkDeadlines',
+      frequency: Duration(hours: 6),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
+    );
+  }
 
   static Future<void> _initializePushNotifications() async {
     await FirebaseMessaging.instance.requestPermission();

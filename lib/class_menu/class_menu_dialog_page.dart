@@ -109,6 +109,8 @@ class _ClassMenuDialogPageState extends State<ClassMenuDialogPage> {
   }
 
   Future<void> _handleAddClassOnPressed() async {
+    print('handleAddClassOnPressed');
+
     _setAddingClass(true);
 
     final isSuccess = await handleAddClass(

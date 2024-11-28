@@ -62,7 +62,7 @@ class MainAppView extends StatelessWidget {
 
   Widget _buildDrawer(BuildContext context) {
     return SizedBox(
-      width: 280,
+      width: 290,
       child: Drawer(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(0)),
