@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "475076298467",
+    "project_id": "tugaskuappid",
+    "storage_bucket": "tugaskuappid.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475076298467:android:065f8f9ec258bd999127d6",
+        "android_client_info": {
+          "package_name": "com.example.tugaskuapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_Yu4YHPehb0GJitX39RuEIhRlQQx1ZBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
