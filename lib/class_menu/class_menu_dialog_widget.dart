@@ -230,7 +230,7 @@ class _JoinClassDialogState extends State<JoinClassDialog> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Kode kelas tidak ditemukan'),
+                                    content: Text('Gagal bergabung ke kelas'),
                                   ),
                                 );
                               }

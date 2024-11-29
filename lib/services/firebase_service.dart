@@ -214,6 +214,10 @@ class FirebaseService {
       throw Exception('Anda sudah menjadi anggota kelas ini');
     }
 
+    // Dapatkan username
+    final userDoc = await _firestore.collection('users').doc(email).get();
+    final username = userDoc.data()?['username'] ?? '';
+
     await classDoc.update({
       'members': FieldValue.arrayUnion([
         {'email': email, 'role': role}
@@ -229,7 +233,7 @@ class FirebaseService {
 
     await _createAndSendNotification(
       type: 'Anggota Baru',
-      message: '$email telah bergabung ke kelas $className',
+      message: '$username telah bergabung ke kelas $className',
       recipients: recipientEmails,
     );
   }
@@ -347,9 +351,12 @@ class FirebaseService {
     List<String> recipientEmails =
         updatedMembers.map<String>((m) => m['email'].toString()).toList();
 
+    final userDoc = await _firestore.collection('users').doc(email).get();
+    final username = userDoc.data()?['username'] ?? '';
+
     await _createAndSendNotification(
       type: 'Anggota Keluar',
-      message: '$email telah keluar dari kelas $className',
+      message: '$username telah keluar dari kelas $className',
       recipients: recipientEmails,
     );
   }
@@ -834,9 +841,12 @@ class FirebaseService {
           .map<String>((m) => m['email'].toString())
           .toList();
 
+      final userDoc = await _firestore.collection('users').doc(email).get();
+      final username = userDoc.data()?['username'] ?? '';
+
       await _createAndSendNotification(
         type: 'Tugas Dikumpulkan',
-        message: '$email telah mengumpulkan $taskName di kelas $className',
+        message: '$username telah mengumpulkan $taskName di kelas $className',
         recipients: recipientEmails,
       );
     } catch (e) {

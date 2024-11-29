@@ -59,7 +59,6 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
     _dueTime = TimeOfDay.fromDateTime(taskData['taskDeadline'].toDate());
     _closeDate = taskData['taskCloseDeadline'].toDate();
     _closeTime = TimeOfDay.fromDateTime(taskData['taskCloseDeadline'].toDate());
-    _selectedMembers = List<String>.from(taskData['taskMembers']);
   }
 
   Future<void> _fetchAvailableMembers() async {
@@ -194,11 +193,11 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
           'pdf',
           'doc',
           'docx',
-          'xls',
-          'xlsx',
           'jpg',
           'jpeg',
           'png',
+          'mp4',
+          'mkv',
           'zip'
         ],
         allowMultiple: false,
@@ -369,6 +368,13 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
     return null;
   }
 
+  String? _validateMembers(List<String>? members) {
+    if (members == null || members.isEmpty) {
+      return 'Mohon pilih anggota';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ClassTaskListAddView(
@@ -388,6 +394,7 @@ class _ClassTaskListAddPageState extends State<ClassTaskListAddPage> {
       onSave: _handleSave,
       taskNameValidator: _validateTaskName,
       descriptionValidator: _validateDescription,
+      membersValidator: _validateMembers,
       selectedFileName: _selectedFile?.name,
       onSelectFile: _selectFile,
       isLoading: _isLoading,

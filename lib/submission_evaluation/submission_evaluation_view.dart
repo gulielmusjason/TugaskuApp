@@ -58,7 +58,7 @@ class SubmissionEvaluationView extends StatelessWidget {
 
   Widget _buildSubmissionInfo(BuildContext context) {
     final theme = Theme.of(context);
-    final bool isEvaluated = submission['score'] != null;
+    final isEvaluated = submission['gradedAt'] != null;
 
     return Card(
       child: Padding(
@@ -89,11 +89,8 @@ class SubmissionEvaluationView extends StatelessWidget {
                     ),
                     child: Text(
                       'Sudah Dinilai',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: Colors.white),
                     ),
                   ),
                 ],

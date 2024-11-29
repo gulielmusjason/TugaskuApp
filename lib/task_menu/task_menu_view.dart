@@ -179,7 +179,9 @@ class TaskMenuView extends StatelessWidget {
                 taskStatus,
                 style: TextStyle(
                   fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
-                  color: taskStatus == 'Telat' ? Colors.red : null,
+                  color: taskStatus == 'Telat'
+                      ? Colors.red
+                      : Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ],

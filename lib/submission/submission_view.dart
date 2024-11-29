@@ -74,17 +74,38 @@ class SubmissionView extends StatelessWidget {
 
   Widget _buildTugasContent(BuildContext context) {
     final theme = Theme.of(context);
+    final isEvaluated = task['submission']['score'] != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          task['taskName'],
-          style: TextStyle(
-            fontSize: theme.textTheme.headlineSmall?.fontSize,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                task['taskName'],
+                style: TextStyle(
+                  fontSize: theme.textTheme.headlineSmall?.fontSize,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+            if (isEvaluated)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.green[700],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Sudah Dinilai',
+                  style:
+                      theme.textTheme.labelSmall?.copyWith(color: Colors.white),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 12),
         Text(
@@ -177,6 +198,32 @@ class SubmissionView extends StatelessWidget {
               ],
             ),
           ),
+        if (isEvaluated) ...[
+          const SizedBox(height: 16),
+          Text(
+            'Nilai:',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            task['submission']['score'].toString(),
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Feedback:',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            task['submission']['feedback'] ?? 'Tidak ada feedback',
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
       ],
     );
   }
@@ -266,13 +313,15 @@ class SubmissionView extends StatelessWidget {
     final isTaskDeadlinePassed =
         task['taskDeadline'] != null && now.compareTo(task['taskDeadline']) > 0;
     final hasSubmitted = task['submission']['submittedAt'] != null;
+    final isEvaluated = task['submission']['gradeAt'] != null;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (hasSubmitted) ...[
           ElevatedButton(
-            onPressed: isTaskClosed || isCancelling ? null : onCancel,
+            onPressed:
+                isTaskClosed || isEvaluated || isCancelling ? null : onCancel,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),

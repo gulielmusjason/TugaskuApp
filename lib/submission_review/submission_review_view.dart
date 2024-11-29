@@ -308,7 +308,8 @@ class SubmissionReviewView extends StatelessWidget {
                             ),
                             child: Text(
                               'Sudah Dinilai',
-                              style: theme.textTheme.labelSmall,
+                              style: theme.textTheme.labelSmall
+                                  ?.copyWith(color: Colors.white),
                             ),
                           ),
                       ],

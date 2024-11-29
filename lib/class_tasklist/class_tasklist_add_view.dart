@@ -14,6 +14,7 @@ class ClassTaskListAddView extends StatelessWidget {
   final VoidCallback onSave;
   final FormFieldValidator<String>? taskNameValidator;
   final FormFieldValidator<String>? descriptionValidator;
+  final FormFieldValidator<List<String>>? membersValidator;
   final String? selectedFileName;
   final VoidCallback onSelectFile;
   final DateTime closeDate;
@@ -40,6 +41,7 @@ class ClassTaskListAddView extends StatelessWidget {
     required this.onSave,
     required this.taskNameValidator,
     required this.descriptionValidator,
+    required this.membersValidator,
     this.selectedFileName,
     required this.onSelectFile,
     required this.closeDate,
@@ -135,6 +137,7 @@ class ClassTaskListAddView extends StatelessWidget {
             return Text(
                 selectedItems.map((item) => item.split('\n')[0]).join(', '));
           },
+          validator: membersValidator,
         ),
       ],
     );
