@@ -310,10 +310,9 @@ class SubmissionView extends StatelessWidget {
     final now = Timestamp.now();
     final isTaskClosed = task['taskCloseDeadline'] != null &&
         now.compareTo(task['taskCloseDeadline']) > 0;
-    final isTaskDeadlinePassed =
-        task['taskDeadline'] != null && now.compareTo(task['taskDeadline']) > 0;
+
     final hasSubmitted = task['submission']['submittedAt'] != null;
-    final isEvaluated = task['submission']['gradeAt'] != null;
+    final isEvaluated = task['submission']['gradedAt'] != null;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -339,19 +338,9 @@ class SubmissionView extends StatelessWidget {
           const SizedBox(width: 8),
         ],
         ElevatedButton(
-          onPressed: (isTaskClosed || hasSubmitted || isSubmitting)
-              ? null
-              : isTaskDeadlinePassed
-                  ? () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                              'Pengumpulan tugas telah melewati batas waktu'),
-                          backgroundColor: Colors.orange,
-                        ),
-                      );
-                      onSave();
-                    }
+          onPressed:
+              (isTaskClosed || hasSubmitted || isSubmitting || isEvaluated)
+                  ? null
                   : onSave,
           child: isSubmitting
               ? const SizedBox(
