@@ -1,3 +1,14 @@
 # Project exclude paths
 /.dart_tool/
 lib/services/firebase_options.dart
+
+
+# Build files
+build/
+**/build/
+ios/build/
+android/build/
+web/build/
+windows/build/
+macos/build/
+linux/build/
