@@ -1,7 +1,7 @@
 # Project exclude paths
 /.dart_tool/
 lib/services/firebase_options.dart
-
+assets/tugaskuappid-firebase-adminsdk-axcfu-0645dd0904.json
 
 # Build files
 build/
