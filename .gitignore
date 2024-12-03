@@ -1,2 +1,3 @@
 # Project exclude paths
 /.dart_tool/
+lib/services/firebase_options.dart
